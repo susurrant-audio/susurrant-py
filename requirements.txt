@@ -1,0 +1,3 @@
+-e git://github.com/matteobertozzi/Hadoop.git#egg=python-hadoop&subdirectory=python-hadoop
+-e git://github.com/detly/gammatone.git#egg=gammatone
+h5py
