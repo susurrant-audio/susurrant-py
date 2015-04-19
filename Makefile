@@ -8,8 +8,6 @@ TRACK_FILE = $(ROOT)/tracks.h5
 WHOLE_TOKEN_FILE = $(VOCAB_DIR)/tokens.h5
 SEGMENTED_TOKEN_FILE = $(ROOT)/segmented.h5
 
-INVERSE_DICT = $(VOCAB_DIR)/vocab.json
-
 UTIL_EXE = $(ROOT)/susurrant-utils/susurrant
 
 LDA_DIR = $(ROOT)/vw
@@ -17,6 +15,8 @@ LDA_IN = $(LDA_DIR)/data.vw
 LDA_OUT = $(LDA_DIR)/topics.dat
 
 VIZ_DIR = $(ROOT)/susurrant_elm/data
+VOCAB_DICT = $(VIZ_DIR)/vocab.json
+INVERSE_DICT = $(VIZ_DIR)/inverses.json
 VIZ_METADATA = $(VIZ_DIR)/doc_metadata.json
 VIZ_TOPICS = $(VIZ_DIR)/topics.json
 
@@ -35,12 +35,12 @@ ANN_FILES = $(addsuffix .tree,$(KMEANS_TYPES))
 .PHONY: track_data
 .PHONY: .viz_data
 
-all: $(SEGMENTED_TOKEN_FILE) $(INVERSE_DICT) .viz_data
+all: $(SEGMENTED_TOKEN_FILE) .viz_data
 
 clean:
 	$(RM) $(VOCAB_DIR)/train/*.tree
 
-.viz_data: $(VIZ_METADATA) $(VIZ_TOPICS) track_data
+.viz_data: $(VIZ_METADATA) $(VIZ_TOPICS) $(VOCAB_DICT) # track_data
 
 # Analyze audio
 $(TRACK_FILE): $(TRACK_DIR)/*.mp3
@@ -71,8 +71,11 @@ $(SEGMENTED_TOKEN_FILE): $(WHOLE_TOKEN_FILE)
 	$(PYTHON) segment.py $< $@
 	touch $@
 
+$(VOCAB_DICT): $(ANN_FILES)
+	$(PYTHON) gen_inverses.py vocab $@
+
 $(INVERSE_DICT): $(ANN_FILES)
-	$(PYTHON) gen_inverses.py $(INVERSE_DICT)
+	$(PYTHON) gen_inverses.py invert $@
 
 $(LDA_IN): $(SEGMENTED_TOKEN_FILE)
 	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) -o $(LDA_IN)

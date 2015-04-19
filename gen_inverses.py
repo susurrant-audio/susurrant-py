@@ -29,16 +29,36 @@ def invert(inv_f, tree_file, features):
     return [inv_f(np.asarray(vec)).tolist() for vec in vectors]
 
 
-def invert_all(vocab_file=os.path.join(DATA_DIR, 'vocab.json')):
+def output_vectors(vocab_file=os.path.join(DATA_DIR, 'vocab.json')):
     vocab = {}
     for dtype in valid_data_types:
         tree_file = os.path.join(VOCAB_DIR, 'train',
                                  'clusters_' + dtype + '.tree')
-        vocab[dtype] = invert(inversions[dtype], tree_file,
+        vectors = get_vectors(tree_file,
                               features=(24 if dtype == 'beat_coefs' else 12))
+        for i, vec in enumerate(vectors):
+            vocab[dtype + str(i+1)] = vec
+    with open(vocab_file, 'wb') as out:
+        json.dump(vocab, out)
+
+
+def invert_all(vocab_file=os.path.join(DATA_DIR, 'inverses.json')):
+    vocab = {}
+    for dtype in valid_data_types:
+        tree_file = os.path.join(VOCAB_DIR, 'train',
+                                 'clusters_' + dtype + '.tree')
+        inverses = invert(inversions[dtype], tree_file,
+                          features=(24 if dtype == 'beat_coefs' else 12))
+
+        for i, vec in enumerate(inverses):
+            vocab[dtype + str(i+1)] = vec
     with open(vocab_file, 'wb') as out:
         json.dump(vocab, out)
 
 
 if __name__ == '__main__':
-    invert_all(sys.argv[1])
+    mode = sys.argv[1]
+    if mode == 'vocab':
+        output_vectors(sys.argv[2])
+    elif mode == 'invert':
+        invert_all(sys.argv[2])
