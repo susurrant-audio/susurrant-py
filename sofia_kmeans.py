@@ -12,8 +12,8 @@ from constants import TIMBRE_GROUP, RHYTHM_GROUP, CHROMA_GROUP
 
 
 data_types = {
-    TIMBRE_GROUP: 1000,
-    RHYTHM_GROUP: 1000,
+    TIMBRE_GROUP: 500,
+    RHYTHM_GROUP: 500,
     CHROMA_GROUP: 24
 }
 
@@ -36,7 +36,7 @@ def cluster(training_file, out_file, k=None):
         d = f['X'].shape[1]
     prog = ['/Users/chrisjr/Development/sofia-ml/sofia-kmeans',
             '--k', str(k),
-            '--init_type', 'random',
+            '--init_type', 'optimized_kmeans_pp',
             '--opt_type', 'mini_batch_kmeans',
             '--mini_batch_size', '100',
             '--iterations', '500',

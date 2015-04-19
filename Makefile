@@ -1,4 +1,3 @@
-
 TRACK_DIR = /Users/chrisjr/Desktop/tracks
 
 ROOT = /Users/chrisjr/Development/susurrant_prep
@@ -29,6 +28,9 @@ KMEANS_INPUT = $(addsuffix .h5, $(addprefix $(VOCAB_DIR)/train/,$(DTYPES)))
 KMEANS_TYPES = $(addprefix $(VOCAB_DIR)/train/clusters_,$(DTYPES))
 KMEANS_RESULT = $(addsuffix .txt,$(KMEANS_TYPES))
 ANN_FILES = $(addsuffix .tree,$(KMEANS_TYPES))
+
+.PRECIOUS: %.h5 %.txt
+.SECONDARY: $(KMEANS_RESULT)
 
 .PHONY: clean
 .PHONY: all
