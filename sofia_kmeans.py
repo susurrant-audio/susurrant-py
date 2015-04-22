@@ -17,7 +17,9 @@ data_types = {
     CHROMA_GROUP: 24
 }
 
-log = logging.getLogger("")
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 TRAINING_FILE = '/Users/chrisjr/Development/susurrant_prep/vocab'
 
 
@@ -29,7 +31,7 @@ def cluster(training_file, out_file, k=None):
     if k is None:
         k = data_types[data_type]
 
-    log.info('starting with k={}'.format(k))
+    logger.info('starting with k={}'.format(k))
     start = time.time()
 
     with h5py.File(training_file, 'r') as f:
@@ -47,17 +49,17 @@ def cluster(training_file, out_file, k=None):
     result = subprocess.check_output(prog)
     objective_re = re.search("Objective function value for training: (.+)",
                              result)
-    log.info('{} finished in {} secs'.format(k, time.time() - start))
+    logger.info('{} finished in {} secs'.format(k, time.time() - start))
     if objective_re is not None:
         value = float(objective_re.group(1))
-        log.info("Objective for {}: {}".format(k, value))
+        logger.info("Objective for {}: {}".format(k, value))
         return value
 
 
 # THIS IS TOO SLOW, use annoy or other ANN library instead
 
 def make_assignments(training_file, out_dir='kmeans', k=500):
-    log.info('starting with k={}'.format(k))
+    logger.info('starting with k={}'.format(k))
     start = time.time()
     base_dir = os.path.join('/Users/chrisjr/Development/susurrant_prep/vocab',
                             out_dir)
@@ -69,11 +71,11 @@ def make_assignments(training_file, out_dir='kmeans', k=500):
             '--cluster_assignments_out', assign_file,
             '--objective_on_test']
     result = subprocess.check_output(prog)
-    log.info('{} finished in {} secs'.format(k, time.time() - start))
+    logger.info('{} finished in {} secs'.format(k, time.time() - start))
     objective_re = re.search("Objective function value for test: (.+)", result)
     if objective_re is not None:
         value = float(objective_re.group(1))
-        log.info("Objective for {}: {}".format(k, value))
+        logger.info("Objective for {}: {}".format(k, value))
         return value
 
 if __name__ == '__main__':
@@ -82,4 +84,5 @@ if __name__ == '__main__':
         k = None
     elif len(sys.argv) == 4:
         [training_file, out_file, k] = sys.argv[1:]
-    cluster(training_file, out_file, k)
+    res = cluster(training_file, out_file, k)
+    print 'Objective value: {} after training'.format(res)

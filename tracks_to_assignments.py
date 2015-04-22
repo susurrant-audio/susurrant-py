@@ -48,7 +48,7 @@ def tracks_to_assignments(track_file=os.path.join(BASE_DIR, 'segmented.h5'),
         with h5py.File(token_file) as g:
             for track in progress(f):
                 grp = f[track]
-                if track in g or set(grp.keys()) != valid_data_types:
+                if set(grp.keys()) != valid_data_types:  # or track in g:
                     continue
                 out_grp = g.create_group(track)
                 for t, tree in anns.iteritems():
