@@ -25,12 +25,15 @@ PYTHON ?= python
 DTYPES = beat_coefs chroma gfccs
 KMEANS_INPUT = $(addsuffix .h5, $(addprefix $(VOCAB_DIR)/train/,$(DTYPES)))
 
+ELKI_FILES = $(addsuffix .elki, $(addprefix $(VOCAB_DIR)/train/,$(DTYPES)))
+DBSCAN_RESULTS = $(addsuffix .dbscan, $(addprefix $(VOCAB_DIR)/train/,$(DTYPES)))
+
 KMEANS_TYPES = $(addprefix $(VOCAB_DIR)/train/clusters_,$(DTYPES))
 KMEANS_RESULT = $(addsuffix .txt,$(KMEANS_TYPES))
 ANN_FILES = $(addsuffix .tree,$(KMEANS_TYPES))
 
-.PRECIOUS: %.h5 %.txt
-.SECONDARY: $(KMEANS_RESULT)
+.PRECIOUS: %.h5 %.txt %.elki
+.SECONDARY: $(KMEANS_RESULT) $(DBSCAN_RESULTS)
 
 .PHONY: clean
 .PHONY: all
@@ -41,6 +44,8 @@ all: $(SEGMENTED_TOKEN_FILE) .viz_data
 
 clean:
 	$(RM) $(VOCAB_DIR)/train/*.tree
+
+elki: $(DBSCAN_RESULTS)
 
 .viz_data: $(VIZ_METADATA) $(VIZ_TOPICS) $(VOCAB_DICT) # track_data
 
@@ -59,6 +64,13 @@ $(KMEANS_INPUT): $(TRACK_FILE)
 # Train k-means
 clusters_%.txt: %_sampled.h5
 	$(PYTHON) sofia_kmeans.py $< $@
+
+# Convert to ELKI format
+%.elki: %_sampled.h5
+	$(UTIL_EXE) elki_prep -i $< -o $@
+
+%.dbscan: %.elki
+	$(PYTHON) run_dbscan.py $< $@
 
 # Train ANNs
 %.tree: %.txt

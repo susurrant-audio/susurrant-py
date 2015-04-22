@@ -12,5 +12,10 @@ RHYTHM_GROUP = 'beat_coefs'
 CHROMA_GROUP = 'chroma'
 ISTFTM_ITER = 50
 
-
 valid_data_types = set([TIMBRE_GROUP, RHYTHM_GROUP, CHROMA_GROUP])
+
+FEATURES_N = {
+  TIMBRE_GROUP: 12,
+  RHYTHM_GROUP: 24,
+  CHROMA_GROUP: 12
+  }

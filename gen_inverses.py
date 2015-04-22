@@ -7,7 +7,7 @@ import numpy as np
 from annoy import AnnoyIndex
 from utils import gfcc_to_stft
 from beat_spectrum import beat_spectrum_from_dct
-from constants import valid_data_types
+from constants import valid_data_types, FEATURES_N
 
 VOCAB_DIR = '../vocab/'
 DATA_DIR = '../susurrant_elm/data/'
@@ -21,40 +21,46 @@ inversions = {'gfccs': lambda x: gfcc_to_stft(x, False),
 def get_vectors(tree_file, features):
     a = AnnoyIndex(features, metric='euclidean')
     a.load(tree_file)
-    return [a.get_item_vector(i+1) for i in xrange(a.get_n_items())]
+    return [a.get_item_vector(i) for i in xrange(a.get_n_items())]
 
 
-def invert(inv_f, tree_file, features):
-    vectors = get_vectors(tree_file, features)
+def invert(inv_f, vectors):
     return [inv_f(np.asarray(vec)).tolist() for vec in vectors]
 
 
-def output_vectors(vocab_file=os.path.join(DATA_DIR, 'vocab.json')):
-    vocab = {}
+def vocab_vectors_by_dtype():
+    vocabs = {}
     for dtype in valid_data_types:
         tree_file = os.path.join(VOCAB_DIR, 'train',
                                  'clusters_' + dtype + '.tree')
-        vectors = get_vectors(tree_file,
-                              features=(24 if dtype == 'beat_coefs' else 12))
-        for i, vec in enumerate(vectors):
-            vocab[dtype + str(i+1)] = vec
+        vectors = get_vectors(tree_file, features=FEATURES_N[dtype])
+        vocabs[dtype] = vectors
+    return vocabs
+
+
+def to_tokens(vectors_by_dtype):
+    vocab = {}
+    for dtype in valid_data_types:
+        for i, vec in enumerate(vectors_by_dtype[dtype]):
+            vocab[dtype + str(i)] = vec
+
+    return vocab
+
+
+def output_vectors(vocab_file=os.path.join(DATA_DIR, 'vocab.json')):
+    vocab = to_tokens(vocab_vectors_by_dtype())
     with open(vocab_file, 'wb') as out:
         json.dump(vocab, out)
 
 
 def invert_all(vocab_file=os.path.join(DATA_DIR, 'inverses.json')):
-    vocab = {}
-    for dtype in valid_data_types:
-        tree_file = os.path.join(VOCAB_DIR, 'train',
-                                 'clusters_' + dtype + '.tree')
-        inverses = invert(inversions[dtype], tree_file,
-                          features=(24 if dtype == 'beat_coefs' else 12))
-
-        for i, vec in enumerate(inverses):
-            vocab[dtype + str(i+1)] = vec
+    vocabs = vocab_vectors_by_dtype()
+    inverse_vocabs = {k: invert(inversions[k], v)
+                      for k, v in vocabs.iteritems()
+                      }
+    inverse_vocab = to_tokens(inverse_vocabs)
     with open(vocab_file, 'wb') as out:
-        json.dump(vocab, out)
-
+        json.dump(inverse_vocab, out)
 
 if __name__ == '__main__':
     mode = sys.argv[1]

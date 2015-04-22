@@ -2,8 +2,8 @@
 
 import os
 import glob
-import codecs
 import subprocess
+from cli import run_app
 import sys
 from rosetta.text import vw_helpers
 from rosetta.text.text_processors import SFileFilter, VWFormatter
@@ -45,19 +45,10 @@ def run_vw_lda(data_file='../vw/data.vw', topics=TOPICS):
         '--readable_model': os.path.join(vw_dir, 'topics.dat')
     }
 
-    process_args = [VW_EXECUTABLE, filtered_data_file]
-
-    for (k, v) in vw_opts.iteritems():
-        process_args.append(k)
-        process_args.append(unicode(v))
-
     for fname in glob.glob(vw_dir + '/*cache'):
         os.unlink(fname)
 
-    with codecs.open(progress_file, 'w', encoding='utf-8') as prog:
-        subprocess.call(process_args,
-                        stdout=prog,
-                        stderr=prog)
+    run_app(VW_EXECUTABLE, [filtered_data_file], vw_opts, progress_file)
 
 
 def read_vw(vw_dir='../vw', topics=TOPICS):

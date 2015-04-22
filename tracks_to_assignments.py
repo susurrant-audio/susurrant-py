@@ -5,7 +5,7 @@ import numpy as np
 import h5py
 import os
 import sys
-from constants import TIMBRE_GROUP, valid_data_types
+from constants import TIMBRE_GROUP, valid_data_types, FEATURES_N
 from progressbar import ProgressBar
 
 BASE_DIR = '/Users/chrisjr/Development/susurrant_prep'
@@ -22,21 +22,29 @@ class FeatureNN:
         return self.tree.get_nns_by_vector(x.tolist(), 1)[0]
 
 
+def get_anns(base_path=os.path.join(BASE_DIR, 'vocab', 'train')):
+    anns = {}
+    for data_type in valid_data_types:
+        features = FEATURES_N[data_type]
+        tree_file = os.path.join(base_path, 'clusters_' + data_type + '.tree')
+        anns[data_type] = FeatureNN(features, tree_file)
+    return anns
+
+
 def tracks_to_assignments(track_file=os.path.join(BASE_DIR, 'segmented.h5'),
                           token_file=os.path.join(BASE_DIR, 'vocab',
                                                   'tokens.h5')):
     progress = ProgressBar()
-    anns = {}
+    anns = get_anns()
 
     with h5py.File(track_file, 'r') as f:
+        # check an examplar to make sure features_N is up to date
         ex = f.values()[0]
         for data_type in ex:
             features = ex[data_type].shape[1]
             if data_type == TIMBRE_GROUP:
                 features -= 1
-            tree_file = os.path.join(BASE_DIR, 'vocab', 'train',
-                                     'clusters_' + data_type + '.tree')
-            anns[data_type] = FeatureNN(features, tree_file)
+            assert features == FEATURES_N[data_type]
         with h5py.File(token_file) as g:
             for track in progress(f):
                 grp = f[track]
