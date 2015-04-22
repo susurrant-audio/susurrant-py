@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import subprocess
 import codecs
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def run_app(executable, ordered_opts=[],
@@ -13,6 +17,7 @@ def run_app(executable, ordered_opts=[],
         if v is not None:
             process_args.append(unicode(v))
 
+    logger.info('Cmd: ' + ' '.join(process_args))
     if progress_file is not None:
         with codecs.open(progress_file, 'w', encoding='utf-8') as prog:
             subprocess.call(process_args,
