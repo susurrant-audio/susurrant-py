@@ -69,7 +69,7 @@ clusters_%.txt: %_sampled.h5
 %.elki: %_sampled.h5
 	$(UTIL_EXE) elki_prep -i $< -o $@
 
-%.dbscan: %.elki
+%.dbscan: %_sampled.h5
 	$(PYTHON) run_dbscan.py $< $@
 
 # Train ANNs
