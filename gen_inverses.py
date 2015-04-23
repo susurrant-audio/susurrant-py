@@ -5,6 +5,7 @@ import json
 import sys
 import numpy as np
 from annoy import AnnoyIndex
+from index_clusters import get_tree_items
 from utils import gfcc_to_stft
 from beat_spectrum import beat_spectrum_from_dct
 from constants import valid_data_types, FEATURES_N
@@ -21,7 +22,7 @@ inversions = {'gfccs': lambda x: gfcc_to_stft(x, False),
 def get_vectors(tree_file, features):
     a = AnnoyIndex(features, metric='euclidean')
     a.load(tree_file)
-    return [a.get_item_vector(i) for i in xrange(a.get_n_items())]
+    return get_tree_items(a)
 
 
 def invert(inv_f, vectors):

@@ -6,6 +6,22 @@ import h5py
 import sys
 
 
+def create_index_tree(clusters):
+    features = clusters.shape[1]
+    tree = AnnoyIndex(features, metric='euclidean')
+
+    for i, v in enumerate(clusters):
+        tree.add_item(i, v.tolist())
+
+    tree.build(features*2)
+    return tree
+
+
+def get_tree_items(tree):
+    return np.asarray([tree.get_item_vector(i)
+                       for i in xrange(tree.get_n_items())])
+
+
 def create_index(cluster_file,
                  tree_file=None):
     if cluster_file.endswith('.h5'):
@@ -17,13 +33,7 @@ def create_index(cluster_file,
     if tree_file is None:
         tree_file = cluster_file.replace('.txt', '.tree')
 
-    features = clusters.shape[1]
-    tree = AnnoyIndex(features, metric='euclidean')
-
-    for i, v in enumerate(clusters):
-        tree.add_item(i, v.tolist())
-
-    tree.build(features*2)
+    tree = create_index_tree(clusters)
     tree.save(tree_file)
     return tree_file
 

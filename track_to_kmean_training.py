@@ -38,22 +38,30 @@ def training_for(data_type=TIMBRE_GROUP,
 
     print '{} x {}'.format(rows, cols)
 
+    if rows > 8192:
+        chunks = (8192, cols)
+    else:
+        chunks = None
+
     logging.info("Reading and outputting " + data_type)
     i = 0
 
     with h5py.File(training_file, 'w') as out:
         out.create_dataset("Y", data=np.zeros(rows), compression=9)
-        X = out.create_dataset("X", (rows, cols), dtype='float32',
-                               chunks=(8192, cols),
-                               compression=9)
+        if chunks is not None:
+            X = out.create_dataset("X", (rows, cols), dtype='float32',
+                                   chunks=chunks,
+                                   compression=9)
+        else:
+            X = out.create_dataset("X", (rows, cols), dtype='float32')
         with h5py.File(track_file, 'r') as f:
             for dset_name in progress(f):
                 grp = f[dset_name]
-                if data_type in grp:
+                if set(grp.keys()) == valid_data_types:
                     if discard_power:
-                        dset = grp[data_type][:, 1:]
+                        dset = grp[data_type].value[:, 1:]
                     else:
-                        dset = grp[data_type]
+                        dset = grp[data_type].value
                     if dset.shape[1] > 0:
                         dset_rows = dset.shape[0]
                         X[i:i+dset_rows, :] = dset
