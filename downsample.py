@@ -7,7 +7,7 @@ from h5utils import by_chunk
 
 
 def downsample(data_file='../vocab/train/chroma.h5', out_file=None,
-               max_samples=2**17):  # 2**24):
+               max_samples=2**16):  # 2**24):
     if out_file is None:
         out_file = data_file.replace('.h5', '_sampled.h5')
     with h5py.File(data_file, 'r') as f:

@@ -12,7 +12,7 @@ def run_dbscan(in_file, out_dir):
         '-algorithm': 'clustering.DBSCAN',
         '-dbc': 'org.chrisjr.susurrantutils.Hdf5DatabaseConnection',
         '-h5.input': in_file,
-        # '-dbc.filter': NORM,
+        '-dbc.filter': NORM,
         # '-db.index': 'tree.spatial.rstarvariants.rstar.RStarTreeFactory',
         # '-spatial.bulkstrategy': 'SortTileRecursiveBulkSplit',
         '-dbscan.epsilon': 0.05,

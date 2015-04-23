@@ -24,6 +24,8 @@ PYTHON ?= python
 
 DTYPES = beat_coefs chroma gfccs
 KMEANS_INPUT = $(addsuffix .h5, $(addprefix $(VOCAB_DIR)/train/,$(DTYPES)))
+KMEANS_DOWNSAMPLED = $(addsuffix _sampled.h5, $(addprefix $(VOCAB_DIR)/train/,$(DTYPES)))
+
 
 ELKI_FILES = $(addsuffix .elki, $(addprefix $(VOCAB_DIR)/train/,$(DTYPES)))
 DBSCAN_RESULTS = $(addsuffix .dbscan, $(addprefix $(VOCAB_DIR)/train/,$(DTYPES)))
@@ -32,19 +34,23 @@ KMEANS_TYPES = $(addprefix $(VOCAB_DIR)/train/clusters_,$(DTYPES))
 KMEANS_RESULT = $(addsuffix .txt,$(KMEANS_TYPES))
 ANN_FILES = $(addsuffix .tree,$(KMEANS_TYPES))
 
-.PRECIOUS: %.h5 %.txt %.elki
-.SECONDARY: $(KMEANS_RESULT) $(DBSCAN_RESULTS)
+.PRECIOUS: %.h5 %.txt %.elki %_sampled.h5
+.SECONDARY: $(KMEANS_RESULT) $(DBSCAN_RESULTS) $(KMEANS_DOWNSAMPLED)
 
 .PHONY: clean
 .PHONY: all
 .PHONY: track_data
 .PHONY: .viz_data
+.PHONY: downsampled
+.PHONY: elki
+
 
 all: $(SEGMENTED_TOKEN_FILE) .viz_data
 
 clean:
 	$(RM) $(VOCAB_DIR)/train/*.tree
 
+downsampled: $(KMEANS_DOWNSAMPLED)
 elki: $(DBSCAN_RESULTS)
 
 .viz_data: $(VIZ_METADATA) $(VIZ_TOPICS) $(VOCAB_DICT) # track_data

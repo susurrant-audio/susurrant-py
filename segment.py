@@ -2,6 +2,7 @@
 
 import h5py
 import sys
+import os
 from progressbar import ProgressBar
 from constants import valid_data_types
 
@@ -37,13 +38,15 @@ def segment_one(track_name, grp, out, frames_per_segment=8192):
 
 def segment(track_file='../tracks.h5', out_file='../segmented.h5'):
     progress = ProgressBar()
+    partway = (os.path.exists(out_file) and
+               os.path.getmtime(track_file) < os.path.getmtime(out_file))
 
     with h5py.File(out_file) as out:
         done = set([x.split('#')[0] for x in out.keys()])
 
         with h5py.File(track_file, 'r') as f:
             for track in progress(f):
-                if track not in done:
+                if track not in done and not partway:
                     grp = f[track]
                     if set(grp.keys()) == valid_data_types:
                         segment_one(track, grp, out)
