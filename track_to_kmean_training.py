@@ -55,7 +55,8 @@ def training_for(data_type=TIMBRE_GROUP,
         else:
             X = out.create_dataset("X", (rows, cols), dtype='float32')
         with h5py.File(track_file, 'r') as f:
-            for dset_name in progress(f):
+            tracks = sorted(f.keys())
+            for dset_name in progress(tracks):
                 grp = f[dset_name]
                 if set(grp.keys()) == valid_data_types:
                     if discard_power:
@@ -68,6 +69,26 @@ def training_for(data_type=TIMBRE_GROUP,
                         i += dset_rows
 
     return training_file
+
+
+def naive_training(data_type, track_file, training_file):
+    with h5py.File(training_file, 'w') as out:
+        data = None
+        discard_power = data_type == TIMBRE_GROUP
+        with h5py.File(track_file, 'r') as f:
+            tracks = sorted(f.keys())
+            for dset_name in tracks:
+                grp = f[dset_name]
+                if set(grp.keys()) == valid_data_types:
+                    if discard_power:
+                        dset = grp[data_type].value[:, 1:]
+                    else:
+                        dset = grp[data_type].value
+                    if data is None:
+                        data = dset
+                    else:
+                        data = np.vstack((data, dset))
+        out.create_dataset("X", data=data)
 
 
 def main():

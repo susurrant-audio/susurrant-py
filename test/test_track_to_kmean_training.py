@@ -2,8 +2,10 @@ import os
 import h5py
 import numpy as np
 from constants import valid_data_types, TIMBRE_GROUP
-from track_to_kmean_training import training_for
+from track_to_kmean_training import *
 from tempfile import NamedTemporaryFile
+
+dtypes = list(valid_data_types)
 
 
 def temp_path():
@@ -16,8 +18,9 @@ def temp_path():
 def generate_tracks(n, m=100):
     tracks = []
     for i in xrange(n):
-        dsets = {k: np.random.rand(m, 10) for k in valid_data_types}
-        tracks.append((str(i), dsets))
+        dsets = {k: np.random.rand(m, 10).astype('float32')
+                 for k in dtypes}
+        tracks.append(('{:#04x}'.format(i), dsets))
     return tracks
 
 
@@ -54,8 +57,7 @@ def test_training_for(tracks_n=10):
             if tracks_n > 10:
                 print combined, data
             assert data.shape == combined.shape
-            print np.absolute(data - combined).sum()
-            assert np.absolute(data - combined).sum() < 1e-3
+            assert np.array_equal(data, combined)
 
     os.unlink(track_file)
     for fname in result_files.values():
