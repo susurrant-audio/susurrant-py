@@ -9,6 +9,7 @@ from index_clusters import get_tree_items
 from utils import gfcc_to_stft
 from beat_spectrum import beat_spectrum_from_dct
 from constants import valid_data_types, FEATURES_N
+from sklearn.preprocessing import scale
 
 VOCAB_DIR = '../vocab/'
 DATA_DIR = '../susurrant_elm/data/'
@@ -35,7 +36,7 @@ def vocab_vectors_by_dtype():
         tree_file = os.path.join(VOCAB_DIR, 'train',
                                  'clusters_' + dtype + '.tree')
         vectors = get_vectors(tree_file, features=FEATURES_N[dtype])
-        vocabs[dtype] = vectors
+        vocabs[dtype] = scale(vectors)
     return vocabs
 
 
@@ -43,7 +44,7 @@ def to_tokens(vectors_by_dtype):
     vocab = {}
     for dtype in valid_data_types:
         for i, vec in enumerate(vectors_by_dtype[dtype]):
-            vocab[dtype + str(i)] = vec
+            vocab[dtype + str(i)] = list(vec)
 
     return vocab
 

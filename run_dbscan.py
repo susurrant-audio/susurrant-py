@@ -15,7 +15,7 @@ def run_dbscan(in_file, out_dir):
         # '-dbc.filter': NORM,
         '-db.index': 'tree.spatial.rstarvariants.rstar.RStarTreeFactory',
         # '-spatial.bulkstrategy': 'SortTileRecursiveBulkSplit',
-        '-dbscan.epsilon': 30,
+        '-dbscan.epsilon': 50,
         '-dbscan.minpts': 10,
         '-verbose': None,
         '-enableDebug': 'de.lmu.ifi.dbs.elki.workflow.AlgorithmStep',
