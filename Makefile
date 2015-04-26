@@ -19,6 +19,9 @@ INVERSE_DICT = $(VIZ_DIR)/inverses.json
 VIZ_METADATA = $(VIZ_DIR)/doc_metadata.json
 VIZ_TOPICS = $(VIZ_DIR)/topics.json
 
+AUDIO_FILE = $(ROOT)/susurrant-max/samples.wav
+AUDIO_INDEX = $(ROOT)/susurrant-max/samples.json
+
 RM ?= rm -f
 PYTHON ?= python
 
@@ -54,6 +57,8 @@ downsampled: $(KMEANS_DOWNSAMPLED)
 elki: $(DBSCAN_RESULTS)
 
 .viz_data: $(VIZ_METADATA) $(VIZ_TOPICS) $(VOCAB_DICT) # track_data
+
+audio: $(AUDIO_FILE) $(AUDIO_INDEX)
 
 # Analyze audio
 $(TRACK_FILE): $(TRACK_DIR)/*.mp3
@@ -111,3 +116,6 @@ $(VIZ_TOPICS): $(LDA_OUT)
 
 track_data: $(SEGMENTED_TOKEN_FILE)
 	$(PYTHON) gen_json.py tracks $(VIZ_DIR) $(SEGMENTED_TOKEN_FILE)
+
+$(AUDIO_FILE): $(ANN_FILES)
+	$(PYTHON) gen_inverses.py audio_file $(AUDIO_FILE) $(AUDIO_INDEX)

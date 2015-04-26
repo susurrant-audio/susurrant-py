@@ -64,7 +64,7 @@ def inv_erb(x):
 
 def ceps_to_stft(inv, x, has_power):
     if not has_power:
-        val = -650
+        val = 0.0
         x = np.concatenate(([val], x))
     x = x.astype(np.float64)
     log_spectrum = scipy.fftpack.idct(x, norm='ortho')
