@@ -27,5 +27,14 @@ def get_tracks():
         track_metadata[track.properties['id']] = inflate(track.properties)
     return track_metadata
 
+def get_track_comments():
+    track_comments = {}
+    graph = Graph()
+
+    for comment in graph.find("Comment"):
+        track_comments[comment.properties['id']] = inflate(comment.properties)
+    return track_comments
+
+
 if __name__ == '__main__':
     print get_tracks().values()[:10]

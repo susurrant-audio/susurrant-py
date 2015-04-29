@@ -6,6 +6,8 @@ TRACK_FILE = $(ROOT)/tracks.h5
 
 WHOLE_TOKEN_FILE = $(VOCAB_DIR)/tokens.h5
 SEGMENTED_TOKEN_FILE = $(ROOT)/segmented.h5
+COMMENT_FILE = $(ROOT)/parsed_comments.json
+
 
 UTIL_EXE = $(ROOT)/susurrant-utils/susurrant
 
@@ -58,6 +60,8 @@ elki: $(DBSCAN_RESULTS)
 
 .viz_data: $(VIZ_METADATA) $(VIZ_TOPICS) $(VOCAB_DICT) # track_data
 
+vw: $(LDA_IN) $(LDA_OUT)
+
 audio: $(AUDIO_FILE) $(AUDIO_INDEX)
 
 # Analyze audio
@@ -96,14 +100,17 @@ $(SEGMENTED_TOKEN_FILE): $(WHOLE_TOKEN_FILE)
 	$(PYTHON) segment.py $< $@
 	touch $@
 
+$(COMMENT_FILE):
+	$(PYTHON) extract_comments.py $@
+
 $(VOCAB_DICT): $(ANN_FILES)
 	$(PYTHON) gen_inverses.py vocab $@
 
 $(INVERSE_DICT): $(ANN_FILES)
 	$(PYTHON) gen_inverses.py invert $@
 
-$(LDA_IN): $(SEGMENTED_TOKEN_FILE)
-	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) -o $(LDA_IN)
+$(LDA_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
+	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) --text-in $(COMMENT_FILE) -o $(LDA_IN)
 
 $(LDA_OUT): $(LDA_IN)
 	$(PYTHON) run_vw.py $< $(TOPICS)
