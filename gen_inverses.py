@@ -56,24 +56,29 @@ def to_tokens(vectors_by_dtype):
 audio_time = 0.5
 audio_len = int(audio_time * 44100)
 
+
 def midi_freq(n):
     return 440.0 * 2**((n-69.0)/12)
+
 
 def saw(i, vol):
     t = np.linspace(0, audio_time, audio_len)
     freq = midi_freq(60+i)
-#    print audio_time, audio_len
-    return sawtooth(2 * np.pi * freq * t, width = 0.5) * vol #  np.power(vol, 1.5)
+    return sawtooth(2 * np.pi * freq * t, width=0.5) * vol
+
 
 def gen_chroma(vec):
     vec = normalize(vec, axis=1, norm='l1')
     chroma_sounds = np.asarray([saw(i, vol) for i, vol in enumerate(vec[0])])
     return chroma_sounds.sum(axis=0)
 
+
 def gen_timbre(vec):
     D = np.tile(vec, (50, 1)).T
     y = reconstruct_phase(D, iter_n=50)
-    return y.astype(np.float64)
+    y = y.astype(np.float64)[:audio_len]
+    assert len(y) == audio_len
+    return y
 
 
 def play_audio():
@@ -106,7 +111,9 @@ def to_audio(wav_file, index_file):
         index[key] = [t, end_t]
     with open(index_file, 'wb') as f:
         json.dump(index, f)
-    wavwrite(np.hstack([audio_snippets[key] for key in keys]), wav_file, fs=44100)
+    wavwrite(np.hstack([audio_snippets[key] for key in keys]),
+             wav_file,
+             fs=44100)
 
 
 def get_inverse_vocabs():

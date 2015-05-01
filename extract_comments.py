@@ -3,6 +3,7 @@ import json
 from collections import defaultdict
 from track_info import get_track_comments
 
+
 def timestamp_to_segment(stamp,
                          sample_rate=22050,
                          frame_size=1024,
@@ -11,6 +12,7 @@ def timestamp_to_segment(stamp,
     sample = seconds * sample_rate
     frame = int(sample / frame_size)
     return frame // frames_per_segment
+
 
 def parse_comment(comment):
     parsed = {}
@@ -29,16 +31,24 @@ def parse_comment(comment):
     parsed['user_url'] = user['permalink_url']
     return parsed
 
-def extract_comments(out_file="../parsed_comments.json"):
+
+def extract_comments(out_file="../susurrant_elm/data/comments.json",
+                     by_segment=False):
     #  track_comments = get_track_comments()
     with open("../comments.json", 'r') as f:
         track_comments = json.load(f)
     parsed_comments = defaultdict(list)
     for comment_id, comment in track_comments.iteritems():
         parsed = parse_comment(comment)
-        parsed_comments[parsed['segment']].append(parsed)
+        if by_segment:
+            parsed_comments[parsed['segment']].append(parsed)
+        else:
+            parsed_comments[parsed['track_id']].append(parsed)
     with open(out_file, 'wb') as f:
         json.dump(dict(parsed_comments), f)
 
 if __name__ == '__main__':
-    extract_comments(sys.argv[1])
+    if len(sys.argv) > 1:
+        extract_comments(sys.argv[1])
+    else:
+        extract_comments()

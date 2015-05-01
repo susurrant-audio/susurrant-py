@@ -122,7 +122,8 @@ $(VIZ_TOPICS): $(LDA_OUT)
 	$(PYTHON) gen_json.py vw $(VIZ_DIR) $(LDA_DIR)
 
 track_data: $(SEGMENTED_TOKEN_FILE)
-	$(PYTHON) gen_json.py tracks $(VIZ_DIR) $(SEGMENTED_TOKEN_FILE)
+#	$(PYTHON) gen_json.py tracks $(VIZ_DIR) $(SEGMENTED_TOKEN_FILE)
+	$(UTIL_EXE) tracks -i $(WHOLE_TOKEN_FILE) -o $(VIZ_DIR)/tracks
 
 $(AUDIO_FILE): $(ANN_FILES)
 	$(PYTHON) gen_inverses.py audio_file $(AUDIO_FILE) $(AUDIO_INDEX)

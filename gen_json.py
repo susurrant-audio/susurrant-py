@@ -76,26 +76,23 @@ def combine_tokens(grp):
 def check_if_valid_track(track_file, token_file_time):
     return (os.path.exists(track_file) and
             os.path.getmtime(track_file) >= token_file_time and
-            os.path.getsize(track_file) > 2)
+            os.path.getsize(track_file) > 3)
 
 
-def save_track_tokens(token_file=os.path.join(BASE_DIR, 'segmented.h5'),
+def save_track_tokens(token_file=os.path.join(BASE_DIR, 'vocab', 'tokens.h5'),
                       out_dir=OUT_DIR):
     progress = ProgressBar()
     token_file_time = os.path.getmtime(token_file)
     with h5py.File(token_file, 'r') as token_file:
-        tracks = [(x, list(y))
-                  for x, y
-                  in groupby(token_file, lambda x: x.split('.')[0])]
-        for track, seg_names in progress(tracks):
+        for track_filename in progress(token_file):
+            track = track_filename.split('.')[0]
             track_file = os.path.join(out_dir, 'tracks', track + '.json')
             if not check_if_valid_track(track_file, token_file_time):
                 with open(track_file, 'wb') as out:
                     tokens = []
-                    for seg_name in seg_names:
-                        grp = token_file[seg_name]
-                        if set(grp.keys()) == valid_data_types:
-                            tokens.extend(combine_tokens(grp))
+                    grp = token_file[track_filename]
+                    if set(grp.keys()) == valid_data_types:
+                        tokens.extend(combine_tokens(grp))
                     json.dump(tokens, out)
 
 
@@ -140,7 +137,7 @@ if __name__ == '__main__':
         vw_dir = sys.argv[3]
         save_vw(vw_dir, out_dir)
     elif mode == 'tracks':
-        seg_file = sys.argv[3]
-        save_track_tokens(seg_file, out_dir)
+        token_file = sys.argv[3]
+        save_track_tokens(token_file, out_dir)
     elif mode == 'metadata':
         save_metadata(out_dir)
