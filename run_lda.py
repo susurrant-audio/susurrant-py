@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import os
 import codecs
 import subprocess
@@ -40,7 +41,7 @@ def run_lda(INSTANCES_FILE=None, MALLET_OUT_DIR='../lda', TOPICS=100):
                                                 'topic-phrases.xml'),
         }
 
-    MALLET = ['/Users/chrisjr/Applications/mallet-2.0.7/bin/mallet', 'run']
+    MALLET = ['/Users/chrisjr/Applications/mallet-2.0.8RC2/bin/mallet', 'run']
 
     process_args = MALLET + ['cc.mallet.topics.tui.TopicTrainer']
     for (k, v) in mallet_opts.iteritems():
@@ -54,4 +55,4 @@ def run_lda(INSTANCES_FILE=None, MALLET_OUT_DIR='../lda', TOPICS=100):
 
 
 if __name__ == '__main__':
-    run_lda()
+    run_lda(*sys.argv[1:])

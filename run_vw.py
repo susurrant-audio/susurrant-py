@@ -31,13 +31,13 @@ def run_vw_lda(data_file='../vw/data.vw', topics=TOPICS):
 
     sff = SFileFilter(VWFormatter())
     sff.load_sfile(data_file)
-    sff.filter_extremes(doc_freq_min=3)
+#     sff.filter_extremes(doc_freq_min=3)
     sff.save(os.path.join(vw_dir, 'sff_file.pkl'))
 
     non_dupes = set(non_dupes_from(data_file))
-    sff.filter_sfile(data_file, filtered_data_file,
-                     doc_id_list=non_dupes,
-                     enforce_all_doc_id=False)
+    sff.filter_sfile(data_file, filtered_data_file)
+#                     doc_id_list=non_dupes,
+#                     enforce_all_doc_id=False,
 #                     min_tf_idf=0.3)
 
     progress_file = os.path.join(vw_dir, 'progress.txt')

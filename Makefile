@@ -11,9 +11,19 @@ COMMENT_FILE = $(ROOT)/parsed_comments.json
 
 UTIL_EXE = $(ROOT)/susurrant-utils/susurrant
 
-LDA_DIR = $(ROOT)/vw
-LDA_IN = $(LDA_DIR)/data.vw
-LDA_OUT = $(LDA_DIR)/topics.dat
+LDA_TYPE = MALLET
+
+LDA_DIR = $($(LDA_TYPE)_DIR)
+LDA_IN = $($(LDA_TYPE)_IN)
+LDA_OUT = $($(LDA_TYPE)_OUT)
+
+VW_DIR = $(ROOT)/vw
+VW_IN = $(VW_DIR)/data.vw
+VW_OUT = $(VW_DIR)/topics.dat
+
+MALLET_DIR = $(ROOT)/mallet
+MALLET_IN = $(MALLET_DIR)/instances.mallet
+MALLET_OUT = $(MALLET_DIR)/topic-state.gz
 
 VIZ_DIR = $(ROOT)/susurrant_elm/data
 VOCAB_DICT = $(VIZ_DIR)/vocab.json
@@ -60,7 +70,9 @@ elki: $(DBSCAN_RESULTS)
 
 .viz_data: $(VIZ_METADATA) $(VIZ_TOPICS) $(VOCAB_DICT) # track_data
 
-vw: $(LDA_IN) $(LDA_OUT)
+vw: $(VW_IN) $(VW_OUT)
+
+mallet: $(MALLET_IN) $(MALLET_OUT)
 
 audio: $(AUDIO_FILE) $(AUDIO_INDEX)
 
@@ -109,17 +121,29 @@ $(VOCAB_DICT): $(ANN_FILES)
 $(INVERSE_DICT): $(ANN_FILES)
 	$(PYTHON) gen_inverses.py invert $@
 
-$(LDA_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
-	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) --text-in $(COMMENT_FILE) -o $(LDA_IN)
+$(VW_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
+#	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) --text-in $(COMMENT_FILE) -o $(LDA_IN)
+	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) -o $@
 
-$(LDA_OUT): $(LDA_IN)
+$(VW_OUT): $(VW_IN)
 	$(PYTHON) run_vw.py $< $(TOPICS)
+
+$(MALLET_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
+	$(UTIL_EXE) to_mallet -i $(SEGMENTED_TOKEN_FILE) --text-in $(COMMENT_FILE) -o $@
+#	$(UTIL_EXE) to_mallet -i $(SEGMENTED_TOKEN_FILE) -o $@
+
+$(MALLET_OUT): $(MALLET_IN)
+	$(PYTHON) run_lda.py $< $(MALLET_DIR) $(TOPICS)
 
 $(VIZ_METADATA):
 	$(PYTHON) gen_json.py metadata $(VIZ_DIR)
 
 $(VIZ_TOPICS): $(LDA_OUT)
-	$(PYTHON) gen_json.py vw $(VIZ_DIR) $(LDA_DIR)
+ifeq ($(LDA_TYPE),VW)
+	$(PYTHON) gen_json.py vw $(VIZ_DIR) $(VW_DIR)
+else
+	$(PYTHON) gen_json.py mallet $(VIZ_DIR) $(MALLET_DIR)
+endif
 
 track_data: $(SEGMENTED_TOKEN_FILE)
 #	$(PYTHON) gen_json.py tracks $(VIZ_DIR) $(SEGMENTED_TOKEN_FILE)
