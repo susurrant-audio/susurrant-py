@@ -13,11 +13,8 @@ def run_lda(INSTANCES_FILE=None, MALLET_OUT_DIR='../lda', TOPICS=100):
     included_instances = os.path.join(MALLET_OUT_DIR, 'instances.mallet')
     if INSTANCES_FILE is None:
         INSTANCES_FILE = included_instances
-        if not os.path.exists(INSTANCES_FILE):
-            raise Exception("No instance file provided!")
-    else:
-        shutil.copyfile(INSTANCES_FILE, included_instances)
-        INSTANCES_FILE = included_instances
+    if not os.path.exists(INSTANCES_FILE):
+        raise Exception("No instance file provided!")
 
     PROGRESS_FILE = os.path.join(MALLET_OUT_DIR, 'progress.txt')
 

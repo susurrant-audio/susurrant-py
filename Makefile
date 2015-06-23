@@ -17,11 +17,18 @@ LDA_DIR = $($(LDA_TYPE)_DIR)
 LDA_IN = $($(LDA_TYPE)_IN)
 LDA_OUT = $($(LDA_TYPE)_OUT)
 
+# INCLUDE_COMMENTS = --text-in $(COMMENT_FILE)
+INCLUDE_COMMENTS =
+
 VW_DIR = $(ROOT)/vw
 VW_IN = $(VW_DIR)/data.vw
 VW_OUT = $(VW_DIR)/topics.dat
 
 MALLET_DIR = $(ROOT)/mallet
+
+MALLET_USE_BULK_LOADER = true
+
+MALLET_IN_TEXT = $(MALLET_DIR)/instances.txt
 MALLET_IN = $(MALLET_DIR)/instances.mallet
 MALLET_OUT = $(MALLET_DIR)/topic-state.gz
 
@@ -30,6 +37,8 @@ VOCAB_DICT = $(VIZ_DIR)/vocab.json
 INVERSE_DICT = $(VIZ_DIR)/inverses.json
 VIZ_METADATA = $(VIZ_DIR)/doc_metadata.json
 VIZ_TOPICS = $(VIZ_DIR)/topics.json
+
+TOPICS = 10
 
 AUDIO_FILE = $(ROOT)/susurrant-max/samples.wav
 AUDIO_INDEX = $(ROOT)/susurrant-max/samples.json
@@ -122,15 +131,26 @@ $(INVERSE_DICT): $(ANN_FILES)
 	$(PYTHON) gen_inverses.py invert $@
 
 $(VW_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
-#	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) --text-in $(COMMENT_FILE) -o $(LDA_IN)
-	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) -o $@
+	$(UTIL_EXE) to_vw -i $(SEGMENTED_TOKEN_FILE) -o $@ $(INCLUDE_COMMENTS)
 
 $(VW_OUT): $(VW_IN)
 	$(PYTHON) run_vw.py $< $(TOPICS)
 
+$(MALLET_IN_TEXT): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
+	$(UTIL_EXE) to_mallet_text -i $(SEGMENTED_TOKEN_FILE) -o $@ $(INCLUDE_COMMENTS)
+
+ifeq ($(MALLET_USE_BULK_LOADER),true)
+$(MALLET_IN): $(MALLET_IN_TEXT)
+	$(MALLET_BIN) run cc.mallet.util.BulkLoader \
+		--keep-sequence true \
+		--input $< \
+		--prune-doc-frequency 0.80 \
+		--prune-count 3 \
+		--output $@
+else
 $(MALLET_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
-	$(UTIL_EXE) to_mallet -i $(SEGMENTED_TOKEN_FILE) --text-in $(COMMENT_FILE) -o $@
-#	$(UTIL_EXE) to_mallet -i $(SEGMENTED_TOKEN_FILE) -o $@
+	$(UTIL_EXE) to_mallet -i $(SEGMENTED_TOKEN_FILE) -o $@ $(INCLUDE_COMMENTS)
+fi
 
 $(MALLET_OUT): $(MALLET_IN)
 	$(PYTHON) run_lda.py $< $(MALLET_DIR) $(TOPICS)
