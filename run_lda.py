@@ -8,7 +8,7 @@ import shutil
 
 MALLET_HOME = os.getenv("MALLET_HOME",
                         os.path.join(os.path.expanduser("~"),
-                                     '/mallet-2.0.8RC2/'
+                                     '/Applications/mallet-2.0.8RC2/'
                                      )
                         )
 MALLET_BINARY = os.path.join(

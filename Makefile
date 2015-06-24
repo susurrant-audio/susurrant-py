@@ -1,6 +1,6 @@
 TRACK_DIR = $(HOME)/Desktop/tracks
 
-ROOT = $(CURDIR)/..
+ROOT = $(abspath $(CURDIR)/..)
 VOCAB_DIR = $(ROOT)/vocab
 TRACK_FILE = $(ROOT)/tracks.h5
 
@@ -27,7 +27,7 @@ VW_OUT = $(VW_DIR)/topics.dat
 
 MALLET_DIR = $(ROOT)/mallet
 
-MALLET_USE_BULK_LOADER = true
+MALLET_USE_BULK_LOADER = false
 
 MALLET_IN_TEXT = $(MALLET_DIR)/instances.txt
 MALLET_IN = $(MALLET_DIR)/instances.mallet
