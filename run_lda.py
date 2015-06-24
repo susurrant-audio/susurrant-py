@@ -6,6 +6,14 @@ import codecs
 import subprocess
 import shutil
 
+MALLET_HOME = os.getenv("MALLET_HOME",
+                        os.path.join(os.path.expanduser("~"),
+                                     '/mallet-2.0.8RC2/'
+                                     )
+                        )
+MALLET_BINARY = os.path.join(
+    MALLET_HOME,
+    '/bin/mallet')
 
 def run_lda(INSTANCES_FILE=None, MALLET_OUT_DIR='../lda', TOPICS=100):
     if not os.path.exists(MALLET_OUT_DIR):
@@ -38,7 +46,7 @@ def run_lda(INSTANCES_FILE=None, MALLET_OUT_DIR='../lda', TOPICS=100):
                                                 'topic-phrases.xml'),
         }
 
-    MALLET = ['/Users/chrisjr/Applications/mallet-2.0.8RC2/bin/mallet', 'run']
+    MALLET = [MALLET_BINARY, 'run']
 
     process_args = MALLET + ['cc.mallet.topics.tui.TopicTrainer']
     for (k, v) in mallet_opts.iteritems():

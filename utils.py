@@ -11,7 +11,7 @@ from essentia.standard import *
 from gammatone.fftweight import fft_weights
 from constants import *
 
-CACHE_DIR = '/Users/chrisjr/Development/susurrant_prep/cached'
+CACHE_DIR = '../cached'
 
 
 def cached(fname=None, load_func=np.load, save_func=np.save):

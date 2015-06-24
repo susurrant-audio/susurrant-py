@@ -12,7 +12,7 @@ from constants import (WINDOW_SIZE, HOP_SIZE, SAMPLE_RATE,
 from beat_spectrum import beat_dcts_from_mfccs
 
 
-def analyze_tracks(track_dir='/Users/chrisjr/Desktop/tracks',
+def analyze_tracks(track_dir,
                    track_file='../tracks.h5'):
     progress = ProgressBar()
 

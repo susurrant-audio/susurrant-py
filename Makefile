@@ -1,6 +1,6 @@
-TRACK_DIR = /Users/chrisjr/Desktop/tracks
+TRACK_DIR = $(HOME)/Desktop/tracks
 
-ROOT = /Users/chrisjr/Development/susurrant_prep
+ROOT = $(HOME)/Development/susurrant_prep
 VOCAB_DIR = $(ROOT)/vocab
 TRACK_FILE = $(ROOT)/tracks.h5
 
@@ -8,6 +8,7 @@ WHOLE_TOKEN_FILE = $(VOCAB_DIR)/tokens.h5
 SEGMENTED_TOKEN_FILE = $(ROOT)/segmented.h5
 COMMENT_FILE = $(ROOT)/parsed_comments.json
 
+MALLET_BIN = $(HOME)/Applications/mallet-2.0.8RC2/bin/mallet
 
 UTIL_EXE = $(ROOT)/susurrant-utils/susurrant
 
@@ -144,13 +145,12 @@ $(MALLET_IN): $(MALLET_IN_TEXT)
 	$(MALLET_BIN) run cc.mallet.util.BulkLoader \
 		--keep-sequence true \
 		--input $< \
-		--prune-doc-frequency 0.80 \
 		--prune-count 3 \
 		--output $@
 else
 $(MALLET_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
 	$(UTIL_EXE) to_mallet -i $(SEGMENTED_TOKEN_FILE) -o $@ $(INCLUDE_COMMENTS)
-fi
+endif
 
 $(MALLET_OUT): $(MALLET_IN)
 	$(PYTHON) run_lda.py $< $(MALLET_DIR) $(TOPICS)

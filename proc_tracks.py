@@ -3,6 +3,7 @@
 import os
 import h5py
 import logging
+from os.path import expanduser
 from essentia.standard import *
 from progressbar import ProgressBar
 from utils import (WINDOW_SIZE, HOP_SIZE, SAMPLE_RATE, USE_GFCC,
@@ -11,7 +12,7 @@ from utils import (WINDOW_SIZE, HOP_SIZE, SAMPLE_RATE, USE_GFCC,
 
 progress = ProgressBar()
 
-TRACK_DIR = '/Users/chrisjr/Desktop/tracks'
+TRACK_DIR = os.path.join(expanduser("~"), '/Desktop/tracks')
 files = [x for x in os.listdir(TRACK_DIR) if x != '.DS_Store']
 
 w = Windowing(type='hann', size=WINDOW_SIZE)

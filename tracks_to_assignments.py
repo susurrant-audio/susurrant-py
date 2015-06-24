@@ -8,7 +8,7 @@ import sys
 from constants import TIMBRE_GROUP, valid_data_types, FEATURES_N
 from progressbar import ProgressBar
 
-BASE_DIR = '/Users/chrisjr/Development/susurrant_prep'
+BASE_DIR = '../'
 
 
 class FeatureNN:

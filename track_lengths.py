@@ -5,10 +5,12 @@ import os
 import wave
 import numpy as np
 import h5py
+import os
 from contextlib import closing
 
 track_file = '../tracks.h5'
-track_dir = '/Users/chrisjr/Desktop/tracks'
+track_dir = os.path.join(os.path.expanduser('~'),
+                         '/Desktop/tracks')
 
 times = []
 frames = []
