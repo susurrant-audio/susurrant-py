@@ -1,6 +1,6 @@
 TRACK_DIR = $(HOME)/Desktop/tracks
 
-ROOT = $(HOME)/Development/susurrant_prep
+ROOT = $(HOME)/Development/susurrant
 VOCAB_DIR = $(ROOT)/vocab
 TRACK_FILE = $(ROOT)/tracks.h5
 
