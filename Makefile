@@ -164,7 +164,7 @@ $(MALLET_IN_RAW): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
 endif
 
 $(MALLET_IN_PRUNED): $(MALLET_IN_RAW)
-	$(UTIL_EXE) prune_mallet -i $(MALLET_IN_RAW) --min-doc-freq 3 --num-words 4096
+	$(UTIL_EXE) prune_mallet -i $(MALLET_IN_RAW) --min-doc-freq 10 --num-words 500
 
 ifeq ($(MALLET_USE_SCALA),true)
 $(MALLET_OUT): $(MALLET_IN)
