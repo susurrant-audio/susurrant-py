@@ -29,9 +29,19 @@ MALLET_DIR = $(ROOT)/mallet
 
 MALLET_USE_BULK_LOADER = false
 MALLET_USE_SCALA = true
+MALLET_DO_PRUNE = false
 
 MALLET_IN_TEXT = $(MALLET_DIR)/instances.txt
-MALLET_IN = $(MALLET_DIR)/instances.mallet
+
+ifeq ($(MALLET_DO_PRUNE),true)
+MALLET_IN = $(MALLET_IN_PRUNED)
+else
+MALLET_IN = $(MALLET_IN_RAW)
+endif
+
+MALLET_IN_RAW = $(MALLET_DIR)/instances.mallet
+MALLET_IN_PRUNED = $(MALLET_DIR)/instances_pruned.mallet
+
 MALLET_OUT = $(MALLET_DIR)/topic-state.gz
 
 VIZ_DIR = $(ROOT)/susurrant_elm/data
@@ -142,16 +152,19 @@ $(MALLET_IN_TEXT): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
 	$(UTIL_EXE) to_mallet_text -i $(SEGMENTED_TOKEN_FILE) -o $@ $(INCLUDE_COMMENTS)
 
 ifeq ($(MALLET_USE_BULK_LOADER),true)
-$(MALLET_IN): $(MALLET_IN_TEXT)
+$(MALLET_IN_RAW): $(MALLET_IN_TEXT)
 	$(MALLET_BIN) run cc.mallet.util.BulkLoader \
 		--keep-sequence true \
 		--input $< \
 		--prune-count 3 \
 		--output $@
 else
-$(MALLET_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
+$(MALLET_IN_RAW): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
 	$(UTIL_EXE) to_mallet -i $(SEGMENTED_TOKEN_FILE) -o $@ $(INCLUDE_COMMENTS)
 endif
+
+$(MALLET_IN_PRUNED): $(MALLET_IN_RAW)
+	$(UTIL_EXE) prune_mallet -i $(MALLET_IN_RAW) --min-doc-freq 3 --num-words 4096
 
 ifeq ($(MALLET_USE_SCALA),true)
 $(MALLET_OUT): $(MALLET_IN)
