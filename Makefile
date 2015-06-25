@@ -29,7 +29,7 @@ MALLET_DIR = $(ROOT)/mallet
 
 MALLET_USE_BULK_LOADER = false
 MALLET_USE_SCALA = true
-MALLET_DO_PRUNE = false
+MALLET_DO_PRUNE = true
 
 MALLET_IN_TEXT = $(MALLET_DIR)/instances.txt
 
@@ -168,7 +168,7 @@ $(MALLET_IN_PRUNED): $(MALLET_IN_RAW)
 
 ifeq ($(MALLET_USE_SCALA),true)
 $(MALLET_OUT): $(MALLET_IN)
-	$(UTIL_EXE) train_mallet -i $(MALLET_DIR) --topics $(TOPICS)
+	$(UTIL_EXE) train_mallet -i $< --topics $(TOPICS)
 else
 $(MALLET_OUT): $(MALLET_IN)
 	$(PYTHON) run_lda.py $< $(MALLET_DIR) $(TOPICS)
