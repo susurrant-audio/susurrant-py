@@ -28,6 +28,7 @@ VW_OUT = $(VW_DIR)/topics.dat
 MALLET_DIR = $(ROOT)/mallet
 
 MALLET_USE_BULK_LOADER = false
+MALLET_USE_SCALA = true
 
 MALLET_IN_TEXT = $(MALLET_DIR)/instances.txt
 MALLET_IN = $(MALLET_DIR)/instances.mallet
@@ -152,8 +153,13 @@ $(MALLET_IN): $(SEGMENTED_TOKEN_FILE) $(COMMENT_FILE)
 	$(UTIL_EXE) to_mallet -i $(SEGMENTED_TOKEN_FILE) -o $@ $(INCLUDE_COMMENTS)
 endif
 
+ifeq ($(MALLET_USE_SCALA),true)
+$(MALLET_OUT): $(MALLET_IN)
+	$(UTIL_EXE) train_mallet -i $< --topics $(TOPICS)
+else
 $(MALLET_OUT): $(MALLET_IN)
 	$(PYTHON) run_lda.py $< $(MALLET_DIR) $(TOPICS)
+endif
 
 $(VIZ_METADATA):
 	$(PYTHON) gen_json.py metadata $(VIZ_DIR)
