@@ -155,7 +155,7 @@ endif
 
 ifeq ($(MALLET_USE_SCALA),true)
 $(MALLET_OUT): $(MALLET_IN)
-	$(UTIL_EXE) train_mallet -i $< --topics $(TOPICS)
+	$(UTIL_EXE) train_mallet -i $(MALLET_DIR) --topics $(TOPICS)
 else
 $(MALLET_OUT): $(MALLET_IN)
 	$(PYTHON) run_lda.py $< $(MALLET_DIR) $(TOPICS)
