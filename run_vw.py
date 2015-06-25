@@ -35,24 +35,24 @@ def run_vw_lda(data_file='../vw/data.vw', topics=TOPICS):
     sff.save(os.path.join(vw_dir, 'sff_file.pkl'))
 
     non_dupes = set(non_dupes_from(data_file))
-    sff.filter_sfile(data_file, filtered_data_file)
+    sff.filter_sfile(data_file, filtered_data_file,
 #                     doc_id_list=non_dupes,
 #                     enforce_all_doc_id=False,
-#                     min_tf_idf=0.3)
+                     min_tf_idf=0.3)
 
     progress_file = os.path.join(vw_dir, 'progress.txt')
 
     vw_opts = {
         '--lda': topics,
         # '--lda_alpha': 0.1,
-        # '--lda_rho': 0.1,
+        '--lda_rho': 0.5,
         # '--lda_D': num_docs,
-        # '--minibatch': 256,
+        '--minibatch': 512,
         # '--power_t': 0.5,
         # '--initial_t': 1,
         '-b': 16,
         '--cache_file': os.path.join(vw_dir, 'ddrs.cache'),
-        '--passes': 10,
+        '--passes': 20,
         '-p': os.path.join(vw_dir, 'predictions.dat'),
         '--readable_model': os.path.join(vw_dir, 'topics.dat')
     }

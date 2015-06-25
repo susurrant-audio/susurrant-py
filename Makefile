@@ -12,7 +12,7 @@ MALLET_BIN = $(HOME)/Applications/mallet-2.0.8RC2/bin/mallet
 
 UTIL_EXE = $(ROOT)/susurrant-utils/susurrant
 
-LDA_TYPE = MALLET
+LDA_TYPE = VW
 
 LDA_DIR = $($(LDA_TYPE)_DIR)
 LDA_IN = $($(LDA_TYPE)_IN)
@@ -24,6 +24,9 @@ INCLUDE_COMMENTS =
 VW_DIR = $(ROOT)/vw
 VW_IN = $(VW_DIR)/data.vw
 VW_OUT = $(VW_DIR)/topics.dat
+
+VW_OUT_FILES = ddrs.cache doc_tokens.vw predictions.dat progress.txt sff_file.pkl topics.dat
+VW_ALL_OUTPUT = $(addprefix $(VW_DIR)/, $(VW_OUT_FILES))
 
 MALLET_DIR = $(ROOT)/mallet
 
@@ -74,6 +77,7 @@ ANN_FILES = $(addsuffix .tree,$(KMEANS_TYPES))
 .SECONDARY: $(KMEANS_RESULT) $(DBSCAN_RESULTS) $(KMEANS_DOWNSAMPLED)
 
 .PHONY: clean
+.PHONY: clean_vw
 .PHONY: all
 .PHONY: track_data
 .PHONY: .viz_data
@@ -85,6 +89,9 @@ all: $(SEGMENTED_TOKEN_FILE) .viz_data
 
 clean:
 	$(RM) $(VOCAB_DIR)/train/*.tree
+
+clean_vw:
+	$(RM) $(VW_ALL_OUTPUT)
 
 downsampled: $(KMEANS_DOWNSAMPLED)
 elki: $(DBSCAN_RESULTS)
