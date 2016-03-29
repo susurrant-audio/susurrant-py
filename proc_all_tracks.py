@@ -101,6 +101,6 @@ def add_rhythm(track_file='../tracks.h5'):
 
 if __name__ == '__main__':
     [track_dir, track_file] = sys.argv[1:]
-    # analyze_tracks(track_dir, track_file)
-    strip_incorrect_rhythm()
-    add_rhythm()
+    analyze_tracks(track_dir, track_file)
+    # strip_incorrect_rhythm()
+    # add_rhythm()

@@ -1,6 +1,5 @@
-TRACK_DIR = $(HOME)/Desktop/tracks
-
 ROOT = $(abspath $(CURDIR)/..)
+TRACK_DIR = $(ROOT)/tracks
 VOCAB_DIR = $(ROOT)/vocab
 TRACK_FILE = $(ROOT)/tracks.h5
 
