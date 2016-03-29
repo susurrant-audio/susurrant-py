@@ -106,7 +106,7 @@ audio: $(AUDIO_FILE_COMPRESSED) $(AUDIO_INDEX)
 
 # Analyze audio
 $(TRACK_FILE): $(TRACK_DIR)/*.mp3
-	$(PYTHON) proc_all_files.py $(TRACK_DIR) $(TRACK_FILE)
+	$(PYTHON) proc_all_tracks.py $(TRACK_DIR) $(TRACK_FILE)
 
 # Split analysis by type (GFCC, chroma, etc.)
 $(KMEANS_INPUT): $(TRACK_FILE)
