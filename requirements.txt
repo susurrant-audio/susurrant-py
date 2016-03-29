@@ -2,4 +2,4 @@ cython
 h5py
 ipy-progressbar
 annoy
-librosa==0.4.1
+librosa==0.4.0
