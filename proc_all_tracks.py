@@ -5,7 +5,7 @@ import h5py
 import logging
 import sys
 from essentia.streaming import *
-from progressbar import ProgressBar
+from ipy_progressbar import ProgressBar
 from constants import (WINDOW_SIZE, HOP_SIZE, SAMPLE_RATE,
                        TIMBRE_GROUP, RHYTHM_GROUP, CHROMA_GROUP,
                        LOW_FREQ, HIGH_FREQ, BANDS, COEFS)

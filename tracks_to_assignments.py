@@ -6,7 +6,7 @@ import h5py
 import os
 import sys
 from constants import TIMBRE_GROUP, valid_data_types, FEATURES_N
-from progressbar import ProgressBar
+from ipy_progressbar import ProgressBar
 
 BASE_DIR = '../'
 

@@ -55,8 +55,9 @@ VIZ_TOPICS = $(VIZ_DIR)/topics.json
 
 TOPICS = 10
 
-AUDIO_FILE = $(ROOT)/susurrant-max/samples.wav
-AUDIO_INDEX = $(ROOT)/susurrant-max/samples.json
+AUDIO_FILE = $(ROOT)/susurrant_elm/data/samples.wav
+AUDIO_FILE_COMPRESSED = $(ROOT)/susurrant_elm/data/samples.mp3
+AUDIO_INDEX = $(ROOT)/susurrant_elm/data/samples.json
 
 RM ?= rm -f
 PYTHON ?= python
@@ -102,7 +103,7 @@ vw: $(VW_IN) $(VW_OUT)
 
 mallet: $(MALLET_IN) $(MALLET_OUT)
 
-audio: $(AUDIO_FILE) $(AUDIO_INDEX)
+audio: $(AUDIO_FILE_COMPRESSED) $(AUDIO_INDEX)
 
 # Analyze audio
 $(TRACK_FILE): $(TRACK_DIR)/*.mp3
@@ -197,3 +198,6 @@ track_data: $(SEGMENTED_TOKEN_FILE)
 
 $(AUDIO_FILE): $(ANN_FILES)
 	$(PYTHON) gen_inverses.py audio_file $(AUDIO_FILE) $(AUDIO_INDEX)
+
+%.mp3: %.wav
+	lame -V 0 $< $@
