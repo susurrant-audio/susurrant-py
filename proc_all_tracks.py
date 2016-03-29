@@ -14,8 +14,6 @@ from beat_spectrum import beat_dcts_from_mfccs
 
 def analyze_tracks(track_dir,
                    track_file='../tracks.h5'):
-    progress = ProgressBar()
-
     files = [x for x in os.listdir(track_dir)
              if x.endswith('.mp3') or x.endswith('.wav')]
 
@@ -49,7 +47,7 @@ def analyze_tracks(track_dir,
 
     loader.audio >> framecutter.signal
 
-    for filename in progress(files):
+    for filename in ProgressBar(files):
         with h5py.File(track_file) as f:
             if filename not in f:
                 try:

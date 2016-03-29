@@ -3,3 +3,4 @@ h5py
 ipy-progressbar
 annoy
 librosa==0.4.0
+-e git://github.com/detly/gammatone.git#egg=gammatone
