@@ -66,7 +66,7 @@ def analyze_tracks(track_dir,
                                        data=pool['lowlevel.hpcp'],
                                        compression=9)
 
-                    bccs = beat_ffts_from_mfccs(pool[fcc_name])
+                    bccs = beat_dcts_from_mfccs(pool[fcc_name])
                     grp.create_dataset(RHYTHM_GROUP, data=bccs, compression=9)
 
                     pool.clear()
