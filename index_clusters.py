@@ -44,4 +44,4 @@ if __name__ == '__main__':
     elif len(sys.argv) == 3:
         create_index(*sys.argv[1:])
     else:
-        print "Usage: index_clusters.py cluster_file index_file"
+        print("Usage: index_clusters.py cluster_file index_file")
