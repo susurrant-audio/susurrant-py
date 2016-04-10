@@ -4,5 +4,6 @@ ipy-progressbar
 annoy
 librosa==0.4.0
 scikits.samplerate
+scikits.audiolab
 -e git://github.com/detly/gammatone.git#egg=gammatone
 

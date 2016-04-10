@@ -93,9 +93,8 @@ def invceps(to_stft, xs, has_power, recover_phase):
                                   window=scipy.signal.hann(WINDOW_SIZE))
             S, phase = librosa.core.magphase(D)
             if x_hat.shape[1] != phase.shape[1]:
-                x_hat = np.pad(x_hat, ((0, 0), (0, 1)),
-                               mode='constant',
-                               constant_values=((0.0, 0.0), (0.0, 0.0)))
+                x_hat = np.pad(x_hat, pad_width=((0,0),(0,1),),
+                               mode='constant')
             y = librosa.core.istft(x_hat * phase, hop_length=HOP_SIZE,
                                    window=window)
     else:
