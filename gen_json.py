@@ -117,6 +117,26 @@ def save_vw(vw_dir='../vw', out_dir=OUT_DIR):
     topic_tokens_to_json(token_g_topic, topic_tokens)
 
 
+def save_bnpy(bnpy_dir='../bnpy', out_dir=OUT_DIR):
+    model = read_bnpy(bnpy_dir)
+
+    topics = os.path.join(out_dir, 'topics.json')
+    doc_topics = os.path.join(out_dir, 'doc_topics.json')
+    token_topics = os.path.join(out_dir, 'token_topics.json')
+    topic_tokens = os.path.join(out_dir, 'topic_tokens.json')
+
+    # with open(topics, 'wb') as f:
+    #     json.dump(lda.pr_topic.tolist(), f)
+
+    # topic_given_doc = lda.pr_topic_g_doc.T.dropna(how='all').T
+    # df_to_json(topic_given_doc, doc_topics, combine=True)
+
+    # topic_given_token = lda.pr_topic_g_token.T.dropna(how='all').T
+    # df_to_json(topic_given_token, token_topics)
+
+    # token_g_topic = lda.pr_token_g_topic.dropna(how='all')
+    # topic_tokens_to_json(token_g_topic, topic_tokens)
+
 def save_metadata(out_dir=OUT_DIR):
     metadata_file = os.path.join(out_dir, 'doc_metadata.json')
     doc_metadata = get_tracks()
@@ -136,6 +156,9 @@ if __name__ == '__main__':
     if mode == 'vw':
         vw_dir = sys.argv[3]
         save_vw(vw_dir, out_dir)
+    elif mode == 'bnpy':
+        bnpy_dir = sys.argv[3]
+        save_bnpy(bnpy_dir, out_dir)
     elif mode == 'tracks':
         token_file = sys.argv[3]
         save_track_tokens(token_file, out_dir)
